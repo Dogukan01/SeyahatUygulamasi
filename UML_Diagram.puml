@@ -1,0 +1,88 @@
+@startuml
+    class HelloApplication {
+        +start(stage: Stage) void
+        +main(args: String[]) void
+    }
+
+    class HelloController {
+        -webView: WebView
+        -webEngine: WebEngine
+        -javaBridge: JavaBridge
+        -yolVerileri: YolVerileri
+        -dijkstra: Dijkstra
+        +initialize() void
+    }
+
+    class JavaBridge {
+        -yolVerileri: YolVerileri
+        -dijkstra: Dijkstra
+        -baslangicSehri: String
+        -bitisSehri: String
+        -mesafe: double
+        -rotaCallback: RotaCallback
+        +JavaBridge()
+        +JavaBridge(yolVerileri: YolVerileri, dijkstra: Dijkstra)
+        +setRotaCallback(callback: RotaCallback) void
+        +citySelected(type: String, cityName: String, lat: double, lon: double) void
+        +updateDistance(distance: double) void
+        +getBaslangicSehri() String
+        +getBitisSehri() String
+        +getMesafe() double
+    }
+
+    class Sehir {
+        -sehirAdi: String
+        -komsuluklar: Map<Sehir, Double>
+        +Sehir(sehirAdi: String)
+        +komsulukEkle(komsuluk: Sehir, mesafe: double) void
+        +getKomsuluklar() Map<Sehir, Double>
+        +getSehirAdi() String
+    }
+
+    class YolVerileri {
+        -SEHIR_SAYISI: int
+        -sehirler: Sehir[]
+        -mesafeHesaplayici: MesafeHesaplayici
+        +YolVerileri()
+        +sehirleriDoldur() void
+        +sehirBul(sehirAdi: String) Sehir
+        +komsulukEkle(sehir1Adi: String, sehir2Adi: String) void
+        +komsuluklariDoldur() void
+        +komsuluklariKontrolEt() void
+    }
+
+    class MesafeHesaplayici {
+        -cityCoordinates: Map<String, CityCoordinates>
+        +MesafeHesaplayici(javaBridge: JavaBridge)
+        -loadCityCoordinates() void
+        +getMesafe(sehir1: String, sehir2: String) double
+        -hesaplaKusUcusuMesafe(lat1: double, lon1: double, lat2: double, lon2: double) double
+    }
+
+    class Rota {
+        -sehirler: List<Sehir>
+        -toplamMesafe: int
+        +Rota()
+        +sehirEkle(sehir: Sehir, mesafe: Double) void
+        +getSehirler() List<Sehir>
+        +getToplamMesafe() int
+    }
+
+    class Dijkstra {
+        +enKisaYolHesapla(kaynak: Sehir, hedef: Sehir) Rota
+        -RotaHesapla(kaynak: Sehir, hedef: Sehir, oncekiSehirler: Map<Sehir, Sehir>, mesafeler: Map<Sehir, Double>) Rota
+    }
+
+    HelloApplication --|> Application
+    HelloController --> JavaBridge
+    HelloController --> YolVerileri
+    HelloController --> Dijkstra
+    JavaBridge --> YolVerileri
+    JavaBridge --> Dijkstra
+    YolVerileri --> Sehir
+    YolVerileri --> MesafeHesaplayici
+    Dijkstra --> Rota
+    Rota --> Sehir
+    Sehir --> Sehir : komsuluklar
+
+@enduml
